@@ -38,23 +38,28 @@ def dummy_fun(doc):
 
 
 def word_word_edges(p_ij):
-    dum = []; word_word = []; counter = 0
-    cols = list(p_ij.columns); cols = [str(w) for w in cols]
+    dum = []; word_word = []
+    counter = 0
+    cols = list(p_ij.columns)
+    cols = [str(w) for w in cols]
     for w1 in tqdm(cols, total=len(cols)):
         for w2 in cols:
             # if (counter % 300000) == 0:
             #    print("Current Count: %d; %s %s" % (counter, w1, w2))
             if (w1 != w2) and ((w1, w2) not in dum) and (p_ij.loc[w1, w2] > 0):
-                word_word.append((w1, w2, {"weight": p_ij.loc[w1, w2]})); dum.append((w2,w1))
+                word_word.append((w1, w2, {"weight": p_ij.loc[w1, w2]}))
+                dum.append((w2, w1))
             counter += 1
     return word_word
 
 
 def pool_word_word_edges(w1):
-    dum = []; word_word = {}
+    dum = []
+    word_word = {}
     for w2 in p_ij.index:
         if (w1 != w2) and ((w1, w2) not in dum) and (p_ij.loc[w1, w2] > 0):
-            word_word = [(w1, w2, {"weight":p_ij.loc[w1, w2]})]; dum.append((w2, w1))
+            word_word = [(w1, w2, {"weight": p_ij.loc[w1, w2]})]
+            dum.append((w2, w1))
     return word_word
 
 
@@ -123,7 +128,7 @@ if __name__ == "__main__":
     """
     # tokenize & remove funny characters
     df_data["c"] = df_data["c"].apply(lambda x: nltk.word_tokenize(x)).apply(lambda x: filter_tokens(x, stopwords))
-    # save_as_pickle("df_data.pkl", df_data)
+    save_as_pickle("df_data.pkl", df_data)
 
     # Tfidf
     vectorizer = TfidfVectorizer(input="content", max_features=None, tokenizer=dummy_fun, preprocessor=dummy_fun)
@@ -184,8 +189,7 @@ if __name__ == "__main__":
 
     print("Calculating PMI...")
     df_occurences = pd.DataFrame(occurrences, columns=occurrences.keys())
-    df_occurences = (
-                                df_occurences + df_occurences.transpose()) / 2  # symmetrize it as window size on both sides may not be same
+    df_occurences = (df_occurences + df_occurences.transpose()) / 2  # symmetrize it as window size on both sides may not be same
     del occurrences
     # convert to PMI
     p_i = df_occurences.sum(axis=0) / no_windows
