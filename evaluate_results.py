@@ -102,10 +102,13 @@ if __name__ == "__main__":
     [x.set_fontsize(15) for x in ax.get_xticklabels()]
     [x.set_fontsize(15) for x in ax.get_yticklabels()]
     plt.savefig(os.path.join("./data/", "test_true_idxs_dist.png"))
+
     # Inference
     net.eval()
-    pred_labels = net(f)
-    c_m = confusion_matrix([(e-1) for e in labels_not_selected], list(pred_labels[test_idxs].max(1)[1].numpy()))
+    # TODO: the model output ??????
+    pred_labels = net(f)  # (130, 66) --> input is (sample_nums, 130), output is (sample_nums, 66)
+    c_m = confusion_matrix([(e-1) for e in labels_not_selected],
+                           list(pred_labels[test_idxs].max(1)[1].numpy()))  # TODO: max(1)[1] ????????
     fig = plt.figure(figsize=(25, 25))
     ax = fig.add_subplot(111)
     sb.heatmap(c_m, annot=False)
