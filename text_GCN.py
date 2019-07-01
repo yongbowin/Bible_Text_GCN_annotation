@@ -213,6 +213,8 @@ if __name__ == "__main__":
     for e in range(start_epoch, end_epoch):
         optimizer.zero_grad()
         output = net(f)
+        """output = loss(input, target)
+        """
         loss = criterion(output[selected], torch.tensor(labels_selected).long() - 1)
         losses_per_epoch.append(loss.item())
         loss.backward()
